@@ -5,7 +5,7 @@ import cm2Java.BlockTypes;
 
 public class Test {
 	public static void main(String[] args) {
-		int blockSize = 400;
+		int blockSize = 50;
 		Cm2Java save = new Cm2Java((int)Math.pow(blockSize, 3),(int)(Math.pow(blockSize, 3)*2));
 		BlockTypes cm2 = new BlockTypes();
 
