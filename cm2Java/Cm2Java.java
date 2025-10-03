@@ -8,8 +8,8 @@ import java.text.DecimalFormat;
 /** use Eclipse IDE for larger saves for better performance if using VSCode*/
 public class Cm2Java {
 
-	private Block[] blocks;
-	private Connection[] connections;
+	public Block[] blocks;
+	public Connection[] connections;
 
 	private int blockCount = 0;
 	private int connectionCount = 0;
@@ -100,7 +100,7 @@ public class Cm2Java {
 		int bufferSize = 16384;
 		
 		try (BufferedWriter writer = new BufferedWriter(new FileWriter(filename), bufferSize)) {
-			StringBuilder saveString = new StringBuilder(blockCount*70 + connectionCount*20+3);
+			StringBuilder saveString = new StringBuilder(blockCount*30 + connectionCount*20+3);
 
 			for (int i=0; i < blockCount; i++) {
 				if (!blocks[i].invalid) {
@@ -131,12 +131,12 @@ public class Cm2Java {
 		}
 	}
 	
-	class Block {
+	public class Block {
 		public int blockID;
 		public boolean state;
 		public float x,y,z;
 		public float[] properties;
-		public boolean invalid = false;
+		boolean invalid = false;
 		
 		public static final DecimalFormat df = new DecimalFormat("0.#");
 		
@@ -151,6 +151,10 @@ public class Cm2Java {
 			this.y = y;
 			this.z = z;
 			this.properties = properties;
+		}
+		
+		public boolean isValid() {
+			return !invalid;
 		}
 		
 		public void toSaveString(StringBuilder string) {
@@ -171,15 +175,26 @@ public class Cm2Java {
 
 	}
 	
-	class Connection {
+	public static class Connection {
 		// should be block index in blocks array
-		int target;
-		int source;
+		final int target, source;
 		boolean invalid = false;
+ 
+		public Connection(int sourceidx, int targetidx) {
+			this.target = targetidx;
+			this.source = sourceidx;
+		}
 
-		public Connection(int source, int target) {
-			this.target = target;
-			this.source = source;
+		public int getSource() {
+			return source;
+		}
+
+		public int getTarget() {
+			return target;
+		}
+
+		public boolean isValid() {
+			return !invalid;
 		}
 
 		public void toSaveString(StringBuilder string) {
