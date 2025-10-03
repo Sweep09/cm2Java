@@ -3,7 +3,9 @@ package cm2Java;
 import java.io.BufferedWriter;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.text.DecimalFormat;
 
+/** use Eclipse IDE for larger saves for better performance if using VSCode*/
 public class Cm2Java {
 
 	private Block[] blocks;
@@ -25,12 +27,12 @@ public class Cm2Java {
 	}
 
 	/** Returns block index on success otherwise -1*/
-	public int createBlock(int blockID, boolean state, double x, double y, double z) {
+	public int createBlock(int blockID, boolean state, float x, float y, float z) {
 	    return createBlock(blockID, state, x, y, z, null);
 	}
 
 	/** Returns block index on success otherwise -1*/
-	public int createBlock(int blockID, boolean state,double x,double y,double z,double[] properties) {
+	public int createBlock(int blockID, boolean state,float x,float y,float z,float[] properties) {
 		totalBlockAttempts++;
 		if (blockCount >= blocks.length) {
 			return -1;
@@ -72,7 +74,7 @@ public class Cm2Java {
 
 		for (int i=0; i < blockCount; i++) {
 			if (!blocks[i].invalid) {
-				saveString.append(blocks[i].toSaveString());
+				blocks[i].toSaveString(saveString);
 				if (i != blockCount-1)
 					saveString.append(";");
 			}
@@ -81,13 +83,12 @@ public class Cm2Java {
 
 		for (int i=0; i < connectionCount; i++) {
 			if (!connections[i].invalid) {
-				saveString.append(connections[i].toSaveString());
+				connections[i].toSaveString(saveString);
 				if (i != connectionCount-1)
 					saveString.append(";");
 			}
 		}
 		saveString.append("?");
-
 //		skip buildings
 		saveString.append("?");
 
@@ -97,33 +98,92 @@ public class Cm2Java {
 	/** Dev's recommendation*/
 	public void exportSaveToFile(String filename) {
 		int bufferSize = 16384;
+		
 		try (BufferedWriter writer = new BufferedWriter(new FileWriter(filename), bufferSize)) {
+			StringBuilder saveString = new StringBuilder(blockCount*70 + connectionCount*20+3);
 
 			for (int i=0; i < blockCount; i++) {
 				if (!blocks[i].invalid) {
-					writer.write(blocks[i].toSaveString());
+					blocks[i].toSaveString(saveString);
 					if (i != blockCount-1)
-						writer.write(";");
+						saveString.append(";");
+				
 				}
 			}
-			writer.write("?");
+			saveString.append("?");
 
 			for (int i=0; i < connectionCount; i++) {
 				if (!connections[i].invalid) {
-					writer.write(connections[i].toSaveString());
+					connections[i].toSaveString(saveString);
 					if (i != connectionCount-1)
-						writer.write(";");
+						saveString.append(";");
 				}
 			}
-			writer.write("?");
-
+			saveString.append("?");
 //		skip buildings
-			writer.write("?");
+			saveString.append("?");
 
+			writer.write(saveString.toString());
 		}
 		catch(IOException e) {
 			e.printStackTrace();
 			System.exit(1);
+		}
+	}
+	
+	class Block {
+		public int blockID;
+		public boolean state;
+		public float x,y,z;
+		public float[] properties;
+		public boolean invalid = false;
+		
+		public static final DecimalFormat df = new DecimalFormat("0.#");
+		
+		public Block(int blockID, boolean state,float x,float y,float z) {
+			this(blockID,state,x,y,z,null);
+		}
+
+		public Block(int blockID, boolean state,float x,float y,float z,float[] properties) {
+			this.blockID = blockID;
+			this.state = state;
+			this.x = x;
+			this.y = y;
+			this.z = z;
+			this.properties = properties;
+		}
+		
+		public void toSaveString(StringBuilder string) {
+			string.append(blockID).append(",");
+			string.append(state ? "1":"").append(",");
+			string.append(x>0? df.format(x):"").append(",");
+			string.append(y>0? df.format(y):"").append(",");
+			string.append(z>0? df.format(z):"").append(",");
+
+			if (properties != null && properties.length > 0) {
+				for (int i=0; i<properties.length; i++) {
+					string.append(properties[i] > 0 ? df.format(properties[i]) : "");
+					if (i < properties.length-1)
+						string.append("+");
+				}
+			}
+		}
+
+	}
+	
+	class Connection {
+		// should be block index in blocks array
+		int target;
+		int source;
+		boolean invalid = false;
+
+		public Connection(int source, int target) {
+			this.target = target;
+			this.source = source;
+		}
+
+		public void toSaveString(StringBuilder string) {
+			string.append(source + "," + target);
 		}
 	}
 

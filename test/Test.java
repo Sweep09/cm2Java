@@ -5,7 +5,7 @@ import cm2Java.BlockTypes;
 
 public class Test {
 	public static void main(String[] args) {
-		int blockSize = 10;
+		int blockSize = 400;
 		Cm2Java save = new Cm2Java((int)Math.pow(blockSize, 3),(int)(Math.pow(blockSize, 3)*2));
 		BlockTypes cm2 = new BlockTypes();
 
@@ -23,6 +23,7 @@ public class Test {
 		long creationEndTime = System.currentTimeMillis();
 		save.exportSaveToFile("save.txt");
 		long exportEndTime = System.currentTimeMillis();
+
 		System.out.println("Blocks creation took: " + (creationEndTime - startTime)+ " ms");
 	    System.out.println("Export took: " + (exportEndTime - creationEndTime) + " ms");
 	    System.out.println("Total time: " + (exportEndTime - startTime) + " ms");

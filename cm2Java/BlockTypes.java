@@ -1,7 +1,7 @@
 package cm2Java;
 
 /** Constants container */
-final public class BlockTypes {
+public final class BlockTypes {
 	public final int NOR = 0;
 	public final int AND = 1;
 	public final int OR = 2;
