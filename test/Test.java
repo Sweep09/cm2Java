@@ -14,7 +14,7 @@ public class Test {
 			for (int y=0;y<blockSize;y++) {
 				for (int z=0;z<blockSize;z++) {
 					save.createBlock(cm2.FLIPFLOP,true,x,y,z);
-//					save.addConnection(x, y*2);
+//					save.addConnection(x, y*2); 
 //					save.addConnection(y*2, z*3);
 				}
 			}
